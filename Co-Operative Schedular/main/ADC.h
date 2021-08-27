@@ -20,6 +20,8 @@
 
 #define ADC_CHANNEL_1         1
 
+#define ADC_CHANNEL_0         0
+
 #define ADC_AUTO_TRIGGER      0
 
 #define ADC_PRESEC_128        7

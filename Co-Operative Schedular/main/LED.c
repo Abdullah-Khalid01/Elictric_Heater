@@ -24,6 +24,7 @@ void LED0_toggle()
 void Button_UP_Init(void)
 {
 	DIO_SetPINDIR(DIO_PORTB, DIO_PIN0, DIO_PIN_INPUT);
+	DIO_WritePIN(DIO_PORTB, DIO_PIN0, DIO_PIN_HIGH);
 }
 uint8 Button_UP_GetVal(void)
 {
@@ -34,6 +35,7 @@ uint8 Button_UP_GetVal(void)
 void Button_Down_Init(void)
 {
 	DIO_SetPINDIR(DIO_PORTD, DIO_PIN2, DIO_PIN_INPUT);
+	DIO_WritePIN(DIO_PORTD, DIO_PIN2, DIO_PIN_HIGH);
 }
 uint8 Button_Down_GetVal(void)
 {

@@ -9,6 +9,10 @@
 #include "DIO.h"
 #include <util/delay.h>
 #define F_CPU 8000000
+extern uint8 Frist_Click;
+extern uint8 Set_Tempreature;
+extern uint8 Set_Tempreature_mask;
+extern uint8 read;
 
 
 void segment7_init(void)
@@ -76,3 +80,32 @@ void segment7_display(uint8 num, uint8 mode)
 	}
 	
 }
+/*
+//uint8 k=0;
+void mode_selection(void)
+{
+	
+	while (!(Get_bit(GIFR,6))&&!Get_bit(GIFR,7)&&k<5000)
+	{
+		k++;
+		if (k+1==5000)
+		{
+			Frist_Click=1;
+			Set_Tempreature=read;
+		}
+		//segment7_display(read,Frist_Click);
+		
+	}
+	while(k==5000)
+	{
+		Set_Tempreature=read;
+		if ((Get_bit(GIFR,6))||(Get_bit(GIFR,7)))
+	{
+		Frist_Click=0;
+		k=0;
+		Set_Tempreature=Set_Tempreature_mask;
+		//segment7_display(Set_Tempreature,Frist_Click);
+	}
+	}
+	
+}*/

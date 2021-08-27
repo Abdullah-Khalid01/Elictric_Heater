@@ -19,7 +19,7 @@
 
 #define ADC_INTERRUPT_STATUS   ADC_INTERRUPT_DISABLE
 
-#define ADC_CHANNEL            ADC_CHANNEL_1
+#define ADC_CHANNEL            ADC_CHANNEL_0
 
 
 #endif /* ADC_CFG_H_ */

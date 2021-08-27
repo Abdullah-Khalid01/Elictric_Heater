@@ -8,10 +8,16 @@
 #include "schedular.h"
 #include "Timer.h"
 #include "LCD.h"
+#include "LED.h"
 #include "Temp_sensor.h"
+#include "heating_element.h"
+#include "cooling_fan.h"
 extern uint8 Set_Tempreature;
-uint16 read=0;// Store ADC value
-extern  uint8 Frist_Click;
+extern uint8 Set_Tempreature_mask;
+uint16 read=60;      // Store ADC value
+uint8 Frist_Click=1;//To select the operating mode
+static uint8 k=0;   //counter
+
 #include <avr/interrupt.h>
 
 uint8 Error_Code_G=0;
@@ -90,22 +96,47 @@ uint8 SCH_Delete_Task(const uint8 id)
 
 ISR(TIMER1_COMPA_vect)
 {
-	static uint8 i=0;
-	uint8 average=0;
+	//static uint8 i=0;
+	
+	/*uint16 average=0;
 	i++;
 	if (i==100) //ADC read every 100ms
 	{
-		//Taking average for 10 reads
-		for (i=0;i<10;i++)
+	//Taking average for 10 reads
+		for (uint8 j=0;j<10;j++)
 		{
 			TempSensor_READ(&read);
 			average=average+read;
 		}
 		average=average/10;
 		i=0;
+	}************** Hashed till finishing 7sement mode selection module*******************/
+		TempSensor_READ(&read);
+	
+	if ((!(Get_bit(GIFR,6)))&&(!(Get_bit(GIFR,7)))&&k<5000)//if the buttons not pressed & counter less than 5 seconds
+	{
+		k++;											   //increase the counter
+		 if (k+1==5000)				                      //if counted 5s
+		{
+			Frist_Click=1;			                     //change mode to normal mode
+			Set_Tempreature=read;                        //display the adc(actual) value
+			k-=1;					                     //reduce the counter by one to make loop.
+		}
 	}
-		
+	
 	segment7_display(Set_Tempreature,Frist_Click);
+	/*********************************** Heating Elements Control *******************************************/
+	if (read<=Set_Tempreature_mask-5)
+	{
+		heating_set_state(heat_ON);
+		cooling_set_state(cool_OFF);
+	}
+	if (read+5>Set_Tempreature_mask)
+	{
+		heating_set_state(heat_OFF);
+		cooling_set_state(cool_ON);
+	}
+	/************************************** End of Elements control block**************************************/
 	uint8 index=0;
 	
 	//calculations are in ticks not milliseconds.
@@ -137,3 +168,25 @@ ISR(TIMER1_COMPA_vect)
 
 																							
 
+ISR(INT0_vect)
+{
+	Frist_Click=0;										 //if button pressed change mode to setting mode
+	k=0;												//re-initialize the counter
+	if (Set_Tempreature_mask>35)
+	{
+		Set_Tempreature_mask=Set_Tempreature_mask-5;   //change the required temperature
+		Set_Tempreature=Set_Tempreature_mask;		  //set_tempreature variable will store the required value to send it to the 7-segment
+	}
+	//EEPROM_Write(Set_Tempreature,EEPROM_Address);
+}
+ISR(INT1_vect)
+{
+	Frist_Click=0;									 //if button pressed change mode to setting mode
+	k=0;											//re-initialize the counter
+	if (Set_Tempreature_mask<75)
+	{
+		Set_Tempreature_mask+=5;					//change the required temperature
+		Set_Tempreature=Set_Tempreature_mask;	   //set_tempreature variable will store the required value to send it to the 7-segment
+	}
+	//EEPROM_Write(Set_Tempreature,EEPROM_Address);
+}

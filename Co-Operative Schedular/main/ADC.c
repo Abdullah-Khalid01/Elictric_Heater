@@ -19,6 +19,10 @@ Clr_bit(ADMUX,7);
 #if ADC_CHANNEL       ==   ADC_CHANNEL_1
 
 Set_bit(ADMUX,0);
+
+#elif ADC_CHANNEL     ==   ADC_CHANNEL_0
+Clr_bit(ADMUX,0);
+
 #endif
 
 #if VOLTAGE_ADJUCENT   ==    ADC_RIGHT_ADJUST

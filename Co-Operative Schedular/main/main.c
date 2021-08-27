@@ -19,7 +19,8 @@
 
 #define EEPROM_Address 0x00
 uint8 Set_Tempreature=60; // select the required tempreature.
-uint8 Frist_Click=1; //To select the operating mode
+uint8 Set_Tempreature_mask=60;//uset to change between required tempreature and actual tempreature.
+
  
 
 int main(void)
@@ -41,37 +42,10 @@ int main(void)
 	{
 		Set_Tempreature=EEPROM_Read(EEPROM_Address);
 	}
-	
+	//Sch_Add_Task(mode_selection(),0,1);
     while(1)
     {	
 		SCH_Dispatch_Tasks();
     }
 	
 }
-
-ISR(INT0_vect)
-{
-		
-		Frist_Click=0;
-		if (Set_Tempreature>35)
-		{
-			while(Button_Down_GetVal());
-			Set_Tempreature=Set_Tempreature-5;
-		}
-			  
-	//EEPROM_Write(Set_Tempreature,EEPROM_Address);
-}
-ISR(INT1_vect)
-{
-	Frist_Click=0;
-		
-		if (Set_Tempreature<75)
-		{
-				while(Button_UP_GetVal());
-				Set_Tempreature+=5;
-			
-		}
-	
-	//EEPROM_Write(Set_Tempreature,EEPROM_Address);
-}
-
