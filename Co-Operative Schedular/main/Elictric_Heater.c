@@ -13,7 +13,7 @@ void Elements_Init(void)
 
 void Heating_Element_On(void)
 {
-	if (//ADC_read<set_tempreature-5)
+	if (//ADC_read<set_tempreature-5)     //replace *ADC_read* & *set_tempreature* with appropriate variables' name
 	{
 		DIO_WritePIN(PORTA, DIO_PIN1, DIO_PIN_HIGH);
 		//led blink every 1 second

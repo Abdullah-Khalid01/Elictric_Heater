@@ -11,7 +11,7 @@
 #include "Timer.h"
 
 
-#define SCH_MAX_TASKS               3
+#define SCH_MAX_TASKS               10
 #define ERROR_SCH_TOO_MANY_TASKS    1 //don't change its value 
 
 

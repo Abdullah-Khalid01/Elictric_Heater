@@ -20,3 +20,24 @@ void LED0_toggle()
 {
 	DIO_togglePin(DIO_PORTD , DIO_PIN3);
 }
+
+void Button_UP_Init(void)
+{
+	DIO_SetPINDIR(DIO_PORTB, DIO_PIN0, DIO_PIN_INPUT);
+}
+uint8 Button_UP_GetVal(void)
+{
+	uint8 Button_value=0;
+	DIO_ReadPin(DIO_PORTB, DIO_PIN0, &Button_value);
+	return Button_value;
+}
+void Button_Down_Init(void)
+{
+	DIO_SetPINDIR(DIO_PORTD, DIO_PIN2, DIO_PIN_INPUT);
+}
+uint8 Button_Down_GetVal(void)
+{
+	uint8 Button_value=0;
+	DIO_ReadPin(DIO_PORTD, DIO_PIN2, &Button_value);
+	return Button_value;
+}

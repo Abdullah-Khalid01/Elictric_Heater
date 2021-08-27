@@ -36,12 +36,20 @@ SUBDIRS :=
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../7_segment.c \
+../ADC.c \
+../cooling_fan.c \
 ../DIO.c \
+../EEPROM.c \
+../Electric_heater_control.c \
 ../Elictric_Heater.c \
+../External_INT.c \
+../heating_element.c \
+../I2C.c \
 ../LCD.c \
 ../LED.c \
 ../main.c \
 ../schedular.c \
+../Temp_sensor.c \
 ../Timer.c
 
 
@@ -53,45 +61,77 @@ ASM_SRCS +=
 
 OBJS +=  \
 7_segment.o \
+ADC.o \
+cooling_fan.o \
 DIO.o \
+EEPROM.o \
+Electric_heater_control.o \
 Elictric_Heater.o \
+External_INT.o \
+heating_element.o \
+I2C.o \
 LCD.o \
 LED.o \
 main.o \
 schedular.o \
+Temp_sensor.o \
 Timer.o
 
 
 OBJS_AS_ARGS +=  \
 7_segment.o \
+ADC.o \
+cooling_fan.o \
 DIO.o \
+EEPROM.o \
+Electric_heater_control.o \
 Elictric_Heater.o \
+External_INT.o \
+heating_element.o \
+I2C.o \
 LCD.o \
 LED.o \
 main.o \
 schedular.o \
+Temp_sensor.o \
 Timer.o
 
 
 C_DEPS +=  \
 7_segment.d \
+ADC.d \
+cooling_fan.d \
 DIO.d \
+EEPROM.d \
+Electric_heater_control.d \
 Elictric_Heater.d \
+External_INT.d \
+heating_element.d \
+I2C.d \
 LCD.d \
 LED.d \
 main.d \
 schedular.d \
+Temp_sensor.d \
 Timer.d
 
 
 C_DEPS_AS_ARGS +=  \
 7_segment.d \
+ADC.d \
+cooling_fan.d \
 DIO.d \
+EEPROM.d \
+Electric_heater_control.d \
 Elictric_Heater.d \
+External_INT.d \
+heating_element.d \
+I2C.d \
 LCD.d \
 LED.d \
 main.d \
 schedular.d \
+Temp_sensor.d \
 Timer.d
 
 
@@ -104,6 +144,22 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -8,7 +8,10 @@
 #include "schedular.h"
 #include "Timer.h"
 #include "LCD.h"
-
+#include "Temp_sensor.h"
+extern uint8 Set_Tempreature;
+uint16 read=0;// Store ADC value
+extern  uint8 Frist_Click;
 #include <avr/interrupt.h>
 
 uint8 Error_Code_G=0;
@@ -28,7 +31,7 @@ void SCH_Init_T2(void)
 	
 }
 
-uint8 Sch_Add_Task (void(*Task_Name)(),const uint16 Initial_Delay,const uint16 Period)
+uint8 Sch_Add_Task (void(*Task_Name)(void),const uint16 Initial_Delay,const uint16 Period)
 {
 	uint8 index=0;
 	
@@ -83,22 +86,26 @@ uint8 SCH_Delete_Task(const uint8 id)
 	SCH_Tasks_G[id].Runme=0;
 }
 
+														
+
 ISR(TIMER1_COMPA_vect)
 {
-	/*
-	static uint16 counter=0;
-	counter++;
-	if (counter==1000)
+	static uint8 i=0;
+	uint8 average=0;
+	i++;
+	if (i==100) //ADC read every 100ms
 	{
-		
-		LCD_WriteString("Hi");
+		//Taking average for 10 reads
+		for (i=0;i<10;i++)
+		{
+			TempSensor_READ(&read);
+			average=average+read;
+		}
+		average=average/10;
+		i=0;
 	}
-	
-	if (counter==2000)
-	{
-		LCD_WriteString("Welcome");
-		counter=0;
-	}*/
+		
+	segment7_display(Set_Tempreature,Frist_Click);
 	uint8 index=0;
 	
 	//calculations are in ticks not milliseconds.
@@ -127,3 +134,6 @@ ISR(TIMER1_COMPA_vect)
 		//Timer1_Manual_Reload();
 	}
 }
+
+																							
+
