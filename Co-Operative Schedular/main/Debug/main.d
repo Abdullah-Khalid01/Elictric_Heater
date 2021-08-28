@@ -19,7 +19,7 @@ main.d main.o: .././main.c \
  c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.1.95\avrtoolchain\bin\../lib/gcc/avr/4.6.2/../../../../avr/include/util/delay_basic.h \
  c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.1.95\avrtoolchain\bin\../lib/gcc/avr/4.6.2/../../../../avr/include/math.h \
  .././LCD_Cfg.h .././Temp_sensor.h .././ADC.h .././ADC_Cfg.h \
- .././External_INT.h .././External_INT_Cfg.h
+ .././External_INT.h .././External_INT_Cfg.h .././7_segment.h
 
 c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.1.95\avrtoolchain\bin\../lib/gcc/avr/4.6.2/../../../../avr/include/avr/interrupt.h:
 
@@ -90,3 +90,5 @@ c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.1.
 .././External_INT.h:
 
 .././External_INT_Cfg.h:
+
+.././7_segment.h:

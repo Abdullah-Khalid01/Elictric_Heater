@@ -7,7 +7,7 @@
 
 #include "ADC.h"
 #include <avr/io.h>
-
+uint16 read=0;
 void ADC_INIT(void)
 {
 #if VOLTAGE_REFRENCE   ==    ADC_VREF_AVCC
@@ -54,6 +54,28 @@ Clr_bit(ADCSRA,3);
 Set_bit(ADCSRA,7);
 }
 
+void ADC_READ(void)
+{
+	uint16 Digital_value=0;
+	
+	Set_bit(ADCSRA,6);
+	
+	#if ADC_INTERRUPT_STATUS  == ADC_INTERRUPT_DISABLE
+	
+	while (! Get_bit(ADCSRA,4));
+	
+	Digital_value=ADC_ADJUST;
+	
+	read=((Digital_value *500)/1024);
+	
+	#endif
+	
+}
+
+
+
+
+/*
 void ADC_READ(uint16* value)
 {
 	uint16 Digital_value=0;
@@ -70,4 +92,4 @@ void ADC_READ(uint16* value)
 	
 	#endif
 	
-}
+}*/

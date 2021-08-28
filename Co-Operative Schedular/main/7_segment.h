@@ -11,7 +11,9 @@
 
 #include "DIO.h"
 void segment7_init(void);
-void segment7_display(uint8 num, uint8 mode);
+void first_segment7_display(void);
 void mode_selection(void);
+void segment7_Stop (void);
+void segment7_Set_Number(uint16 num);
 
 #endif /* 7_SEGMENT_H_ */

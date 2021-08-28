@@ -33,7 +33,7 @@
 
 void ADC_INIT(void);
 
-void ADC_READ(uint16* value);
+void ADC_READ(void);
 
 
 

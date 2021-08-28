@@ -13,6 +13,6 @@
 
 void TempsSensor_INIT(void);
 
-void TempSensor_READ(uint16* temp);
+void TempSensor_READ(void);
 
 #endif /* TEMP_SENSOR_H_ */

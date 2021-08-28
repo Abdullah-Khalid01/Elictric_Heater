@@ -9,19 +9,78 @@
 #include "DIO.h"
 #include <util/delay.h>
 #define F_CPU 8000000
-extern uint8 Frist_Click;
-extern uint8 Set_Tempreature;
-extern uint8 Set_Tempreature_mask;
-extern uint8 read;
 
+uint16 Set_Tempreature=60;				// store the required temperature or the actual value.
+uint8 Set_Tempreature_mask=60;			//used to choose the required temperature.
+uint8 k=1;
+
+extern uint8 segment_blinking_speed;	//select the blinking speed
+extern uint16 average;					//average of 10 ADC reads
+//uint8 temp=0;							
+
+static uint8 counter=0;
+uint8 arr[]={0,1,2,3,4,5,6,7,8,9};		//Used to display numbers on 7-segment
+uint8 j,x;								//To store each number of the value displayed
 
 void segment7_init(void)
 {
+	//Define 7-semnents enable pins as output
 	DIO_SetPINDIR(DIO_PORTB, DIO_PIN1, DIO_PIN_OUTPUT);
 	DIO_SetPINDIR(DIO_PORTB, DIO_PIN2, DIO_PIN_OUTPUT);
-	DIO_SetPortDIR(DIO_PORTA, DIO_PORT_OUTPUT);
+	//Define Data Port as output
+	DIO_SetPortDIR(DIO_PORTA,DIO_PORT_OUTPUT);
+	//set pins 4-7 on port A as output
+	/*DIO_SetPINDIR(DIO_PORTA,DIO_PIN0 , DIO_PIN_INPUT);
+	DIO_SetPINDIR(DIO_PORTA,DIO_PIN4 , DIO_PIN_OUTPUT);
+	DIO_SetPINDIR(DIO_PORTA,DIO_PIN5 , DIO_PIN_OUTPUT);
+	DIO_SetPINDIR(DIO_PORTA,DIO_PIN6 , DIO_PIN_OUTPUT);
+	DIO_SetPINDIR(DIO_PORTA,DIO_PIN7 , DIO_PIN_OUTPUT);*/
 	
 }
+void segment7_Set_Number(uint16 num)
+{
+	//split the value into 2 values to display each number on different 7-segment
+	j=num%10;
+	num=num/10;
+	
+	x=num%100;
+}
+void first_segment7_display(void)
+{
+	
+	/*
+	if(counter<5000 && Set_Tempreature==Set_Tempreature_mask)
+	{
+		counter++;
+	}
+	if (counter+1==5000)
+	{
+		counter=0;
+		segment_blinking_speed=20;
+		Set_Tempreature=average;
+	}*/
+		//Prepare the value for display
+		segment7_Set_Number(Set_Tempreature);
+		//Display the value
+		PORTA=((arr[x])<<4);
+		DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_HIGH);
+		_delay_ms(10);
+		DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_LOW);
+		PORTA=((arr[j])<<4);
+		DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_HIGH);
+		_delay_ms(10);
+		DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_LOW);
+}
+void segment7_Stop (void)
+{
+	DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_LOW);
+	DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_LOW);
+}
+
+
+
+
+/* This function is working perfectly, but it's not appropriate for this scheduler application.
 void segment7_display(uint8 num, uint8 mode)
 {
 	
@@ -34,18 +93,18 @@ void segment7_display(uint8 num, uint8 mode)
 		
 		if (mode==1)
 		{
-			DIO_WritePIN(DIO_PORTB, DIO_PIN3, DIO_PIN_LOW);
+			DIO_WritePIN(DIO_PORTB, DIO_PIN3, DIO_PIN_LOW);//disable (dot) sign for fraction numbers less than 1
 			
 			PORTA=(temp <<4);
-			DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_HIGH);
+			DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_HIGH);// enable first 7-segment
 			_delay_ms(1);
-			DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_LOW);
+			DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_LOW);// disable first 7-segment
 			
 			
 			PORTA=(num <<4);
-			DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_HIGH);
+			DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_HIGH);// enable first 7-segment
 			_delay_ms(1);
-			DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_LOW);
+			DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_LOW);// disable first 7-segment
 		}
 		
 		if (mode==0)
@@ -62,9 +121,9 @@ void segment7_display(uint8 num, uint8 mode)
 			PORTA=(num <<4);
 			DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_HIGH);
 			_delay_ms(250);
-			DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_LOW);
-			DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_LOW);
-			_delay_ms(1000);
+			DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_LOW);//disable both 7-segments 
+			DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_LOW);//to make it blinking
+			_delay_ms(1000);							   //delay amount
 		}
 		
 		
@@ -80,32 +139,21 @@ void segment7_display(uint8 num, uint8 mode)
 	}
 	
 }
-/*
-//uint8 k=0;
+*/
+
 void mode_selection(void)
 {
 	
-	while (!(Get_bit(GIFR,6))&&!Get_bit(GIFR,7)&&k<5000)
+	while ((!(Get_bit(GIFR,6)))&&(!(Get_bit(GIFR,7)))&&(k<5000))//if the buttons not pressed & counter less than 5 seconds
 	{
-		k++;
-		if (k+1==5000)
+		k++;											   //increase the counter
+		if (k+1==5000)				                      //if counted 5s
 		{
-			Frist_Click=1;
-			Set_Tempreature=read;
+			segment_blinking_speed=20;			                     //change mode to normal mode
+			Set_Tempreature=average;                        //display the adc(actual) value
+		//	k-=1;					                     //reduce the counter by one to make loop.
 		}
-		//segment7_display(read,Frist_Click);
-		
-	}
-	while(k==5000)
-	{
-		Set_Tempreature=read;
-		if ((Get_bit(GIFR,6))||(Get_bit(GIFR,7)))
-	{
-		Frist_Click=0;
-		k=0;
-		Set_Tempreature=Set_Tempreature_mask;
-		//segment7_display(Set_Tempreature,Frist_Click);
-	}
 	}
 	
-}*/
+	
+}

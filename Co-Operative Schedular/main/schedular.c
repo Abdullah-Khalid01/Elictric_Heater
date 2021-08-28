@@ -7,17 +7,17 @@
 
 #include "schedular.h"
 #include "Timer.h"
-#include "LCD.h"
 #include "LED.h"
-#include "Temp_sensor.h"
 #include "heating_element.h"
 #include "cooling_fan.h"
-extern uint8 Set_Tempreature;
-extern uint8 Set_Tempreature_mask;
-uint16 read=60;      // Store ADC value
-uint8 Frist_Click=1;//To select the operating mode
-static uint8 k=0;   //counter
-
+#include "Temp_sensor.h"
+extern uint16 Set_Tempreature;			//store the required temperature or the actual value.
+extern uint8 Set_Tempreature_mask;		//used to choose the required temperature.
+extern uint8 segment_blinking_speed;	//select the blinking speed
+extern uint16 average;					//average of 10 ADC reads
+extern uint8 CounterRegister_InitValue; //initialize timer0 with appropriate value to count 5 seconds
+extern uint32 Number_OverFlows;			//store the number of overflows required to reach 5 seconds
+uint8 TaskID=0;							//ID used to delete the task and stop it fro serving
 #include <avr/interrupt.h>
 
 uint8 Error_Code_G=0;
@@ -93,45 +93,16 @@ uint8 SCH_Delete_Task(const uint8 id)
 }
 
 														
-
+//ISR of Timer1 used for scheduler
 ISR(TIMER1_COMPA_vect)
 {
-	//static uint8 i=0;
-	
-	/*uint16 average=0;
-	i++;
-	if (i==100) //ADC read every 100ms
-	{
-	//Taking average for 10 reads
-		for (uint8 j=0;j<10;j++)
-		{
-			TempSensor_READ(&read);
-			average=average+read;
-		}
-		average=average/10;
-		i=0;
-	}************** Hashed till finishing 7sement mode selection module*******************/
-		TempSensor_READ(&read);
-	
-	if ((!(Get_bit(GIFR,6)))&&(!(Get_bit(GIFR,7)))&&k<5000)//if the buttons not pressed & counter less than 5 seconds
-	{
-		k++;											   //increase the counter
-		 if (k+1==5000)				                      //if counted 5s
-		{
-			Frist_Click=1;			                     //change mode to normal mode
-			Set_Tempreature=read;                        //display the adc(actual) value
-			k-=1;					                     //reduce the counter by one to make loop.
-		}
-	}
-	
-	segment7_display(Set_Tempreature,Frist_Click);
 	/*********************************** Heating Elements Control *******************************************/
-	if (read<=Set_Tempreature_mask-5)
+	if (average<=Set_Tempreature_mask-5)
 	{
 		heating_set_state(heat_ON);
 		cooling_set_state(cool_OFF);
 	}
-	if (read+5>Set_Tempreature_mask)
+	if (average+5>Set_Tempreature_mask)
 	{
 		heating_set_state(heat_OFF);
 		cooling_set_state(cool_ON);
@@ -167,11 +138,18 @@ ISR(TIMER1_COMPA_vect)
 }
 
 																							
-
+//ISR of the button used to reduce the required value.
 ISR(INT0_vect)
-{
-	Frist_Click=0;										 //if button pressed change mode to setting mode
-	k=0;												//re-initialize the counter
+{		
+		//scheduler delete task for tempreature sensor to display the required temperature
+		SCH_Delete_Task(TaskID);
+		//stop counting to re-initialize the timer
+		Timer0_Stop();
+		//re-initialize the timer by the appropriate value to count 5 seconds
+		TCNT0=CounterRegister_InitValue;
+		//start counting when button pressed
+		Timer0_Start();
+		//segment_blinking_speed=50;
 	if (Set_Tempreature_mask>35)
 	{
 		Set_Tempreature_mask=Set_Tempreature_mask-5;   //change the required temperature
@@ -179,14 +157,44 @@ ISR(INT0_vect)
 	}
 	//EEPROM_Write(Set_Tempreature,EEPROM_Address);
 }
+//ISR of the button used to increase the required value.
 ISR(INT1_vect)
 {
-	Frist_Click=0;									 //if button pressed change mode to setting mode
-	k=0;											//re-initialize the counter
+		//scheduler delete task for tempreature sensor to display the required temperature
+		SCH_Delete_Task(TaskID);
+		//stop counting to re-initialize the timer
+		Timer0_Stop();
+		//re-initialize the timer by the appropriate value to count 5 seconds
+		TCNT0=CounterRegister_InitValue;
+		//start counting when button pressed
+		Timer0_Start();									 
+	//segment_blinking_speed=50;					
 	if (Set_Tempreature_mask<75)
-	{
+	{	
 		Set_Tempreature_mask+=5;					//change the required temperature
 		Set_Tempreature=Set_Tempreature_mask;	   //set_tempreature variable will store the required value to send it to the 7-segment
 	}
 	//EEPROM_Write(Set_Tempreature,EEPROM_Address);
+}
+//ISR of timer0 to count 5seconds
+ISR(TIMER0_OVF_vect)
+{
+	
+	static uint32 counter=0;
+	counter++;
+	//if 5 seconds counted do:
+	if (counter==Number_OverFlows)
+	{
+		//Stop the timer as no long needed.
+		Timer0_Stop();
+		//re-initialize the timer for next button press
+		TCNT0=CounterRegister_InitValue;
+		//re-initialize counter to start over in the next time
+		counter=0;
+		//stop blinking
+		segment_blinking_speed=20;
+		//Start displaying the ADC(actual) tempreature value.
+		TaskID=Sch_Add_Task(TempSensor_READ,0,100);
+	}
+	
 }

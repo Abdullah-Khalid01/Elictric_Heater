@@ -71,6 +71,14 @@ void Timer0_Start(void)
 	TCCR0 |= 0x05;
 	
 }
+void Timer0_Stop(void)
+{
+	
+	Clr_bit(TCCR0,0);
+	Clr_bit(TCCR0,1);
+	Clr_bit(TCCR0,2);
+	
+}
 
 void Timer0_Manual_Reload(void)
 {
@@ -84,14 +92,14 @@ void Set_Call_Back_Timer0(void(*ptr)(uint8 *str))
 	Time0_Call_Back_ptr=ptr;
 }
 
-void Timer0_SetDelay(uint32 Delay_Ms)
+void Timer0_SetDelay(void)
 {
 	
 	
 	/* tick time in micro second */
 	uint8 Tick_Time_us = (1024 / 16);
 	
-	uint32 Total_Ticks = (Delay_Ms * 1000) / Tick_Time_us;
+	uint32 Total_Ticks = (5000 * 1000) / Tick_Time_us;
 	
 	#if TIMER0_MODE==NORMAL
 	
