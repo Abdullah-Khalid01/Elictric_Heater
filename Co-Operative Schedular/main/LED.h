@@ -19,6 +19,8 @@ void Button_Down_Init(void);
 uint8 Button_Down_GetVal(void);
 uint8 Button_UP_GetVal(void);
 
+void LED1_toggle(void);
+void LED1_INIT(void);
 
 
 #endif
