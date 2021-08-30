@@ -34,7 +34,7 @@ uint8 segment7_ID=0;
 #define EEPROM_Address 0x00
 
 uint8 segment_blinking_speed=50;
- 
+uint8 stored_temp=0;
 
 int main(void)
 {
@@ -52,13 +52,13 @@ int main(void)
 	ExternalINT1_INIT();
 	segment7_init();
 	
-	//EEPROM_Init();
+	EEPROM_Init();
 	
-	
-	/*if (EEPROM_Read(EEPROM_Address)!=60)
+	stored_temp=EEPROM_Read(EEPROM_Address);
+	if (stored_temp!=60)
 	{
 		Set_Tempreature=EEPROM_Read(EEPROM_Address);
-	}*/
+	}
 	
 	segment7_ID=Sch_Add_Task(first_segment7_display,0,50);  //start display values on 7-segment
 	Sch_Add_Task(Timer0_SetDelay,0,0);							   //Initialize timer0 to count for 5 seconds
@@ -75,8 +75,6 @@ int main(void)
 
 ISR(INT0_vect)
 {		
-	
-	//LED1_toggle();
 		SCH_Delete_Task(segment7_ID);
 		segment7_ID=Sch_Add_Task(first_segment7_display,0,50);
 		//scheduler delete task for temperature sensor to display the required temperature
@@ -87,22 +85,19 @@ ISR(INT0_vect)
 		TCNT0=CounterRegister_InitValue;
 		//start counting when button pressed
 		Timer0_Start();
-	//	segment_blinking_speed=50;
 	if (Set_Tempreature_mask>35)
 	{
 		Set_Tempreature_mask=Set_Tempreature_mask-5;   //change the required temperature
 		Set_Tempreature=Set_Tempreature_mask;		  //set_tempreature variable will store the required value to send it to the 7-segment
 	}
 	
-	//EEPROM_Write(Set_Tempreature,EEPROM_Address);
+	EEPROM_Write(Set_Tempreature,EEPROM_Address);
 }
 
 //ISR of the button used to increase the required value.
 
 ISR(INT1_vect)
 {
-	
-	//LED1_toggle();
 		SCH_Delete_Task(segment7_ID);
 		segment7_ID=Sch_Add_Task(first_segment7_display,0,50);
 		//scheduler delete task for temperature sensor to display the required temperature
@@ -112,15 +107,14 @@ ISR(INT1_vect)
 		//re-initialize the timer by the appropriate value to count 5 seconds
 		TCNT0=CounterRegister_InitValue;
 		//start counting when button pressed
-		Timer0_Start();									 
-	//segment_blinking_speed=50;					
+		Timer0_Start();									 					
 	if (Set_Tempreature_mask<75)
 	{	
 		Set_Tempreature_mask+=5;					//change the required temperature
 		Set_Tempreature=Set_Tempreature_mask;	   //set_tempreature variable will store the required value to send it to the 7-segment
 	}
 	
-	//EEPROM_Write(Set_Tempreature,EEPROM_Address);
+	EEPROM_Write(Set_Tempreature,EEPROM_Address);
 }
 
 //ISR of timer0 to count 5seconds
