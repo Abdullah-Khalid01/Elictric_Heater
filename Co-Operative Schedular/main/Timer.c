@@ -92,14 +92,14 @@ void Set_Call_Back_Timer0(void(*ptr)(uint8 *str))
 	Time0_Call_Back_ptr=ptr;
 }
 
-void Timer0_SetDelay(void)
+void Timer0_SetDelay(uint32 Delay_ms)
 {
 	
-	
+	Delay_ms=5000;
 	/* tick time in micro second */
 	uint8 Tick_Time_us = (1024 / 16);
 	
-	uint32 Total_Ticks = (5000 * 1000) / Tick_Time_us;
+	uint32 Total_Ticks = (Delay_ms * 1000) / Tick_Time_us;
 	
 	#if TIMER0_MODE==NORMAL
 	

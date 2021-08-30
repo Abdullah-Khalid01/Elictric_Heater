@@ -18,12 +18,12 @@
 void Timer0_Init(void);
 void Timer0_Manual_Reload(void);
 void Set_Call_Back_Timer0(void(*ptr)(uint8 *str));
-void Timer0_Start(void);
+void Timer0_Start();
 void Timer0_Stop(void);
 //////////////////////////////////////////Timer 1 Prototypes//////////////////////////////////////
 void Timer1_Init(void);
 void Timer1_Manual_Reload(void);
 void Set_Call_Back_Timer1(void(*ptr)(void));
-void Timer0_SetDelay(void);
+void Timer0_SetDelay(uint32 Delay_ms);
 
 #endif /* TIMER_H_ */

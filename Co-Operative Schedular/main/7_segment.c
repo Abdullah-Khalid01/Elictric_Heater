@@ -10,6 +10,8 @@
 #include <util/delay.h>
 #define F_CPU 8000000
 
+
+
 uint16 Set_Tempreature=60;				// store the required temperature or the actual value.
 uint8 Set_Tempreature_mask=60;			//used to choose the required temperature.
 uint8 k=1;
@@ -25,10 +27,10 @@ uint8 j,x;								//To store each number of the value displayed
 void segment7_init(void)
 {
 	//Define 7-semnents enable pins as output
-	DIO_SetPINDIR(DIO_PORTB, DIO_PIN1, DIO_PIN_OUTPUT);
-	DIO_SetPINDIR(DIO_PORTB, DIO_PIN2, DIO_PIN_OUTPUT);
+	DIO_SetPINDIR(segment7_EN_PORT, Segment7_1_EN, DIO_PIN_OUTPUT);
+	DIO_SetPINDIR(segment7_EN_PORT, Segment7_2_EN, DIO_PIN_OUTPUT);
 	//Define Data Port as output
-	DIO_SetPortDIR(DIO_PORTA,DIO_PORT_OUTPUT);
+	DIO_SetPortDIR(segment7_DATA_PORT,DIO_PORT_OUTPUT);
 	
 	
 }
@@ -42,34 +44,22 @@ void segment7_Set_Number(uint16 num)
 }
 void first_segment7_display(void)
 {
-	
-	/*
-	if(counter<5000 && Set_Tempreature==Set_Tempreature_mask)
-	{
-		counter++;
-	}
-	if (counter+1==5000)
-	{
-		counter=0;
-		segment_blinking_speed=20;
-		Set_Tempreature=average;
-	}*/
 		//Prepare the value for display
 		segment7_Set_Number(Set_Tempreature);
 		//Display the value
-		PORTA=((arr[x])<<4);
-		DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_HIGH);
+		segment7_DATA_PORT=((arr[x])<<4);
+		DIO_WritePIN(segment7_EN_PORT, Segment7_2_EN, DIO_PIN_HIGH);
 		_delay_ms(10);
-		DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_LOW);
-		PORTA=((arr[j])<<4);
-		DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_HIGH);
+		DIO_WritePIN(segment7_EN_PORT, Segment7_2_EN, DIO_PIN_LOW);
+		segment7_DATA_PORT=((arr[j])<<4);
+		DIO_WritePIN(segment7_EN_PORT, Segment7_1_EN, DIO_PIN_HIGH);
 		_delay_ms(10);
-		DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_LOW);
+		DIO_WritePIN(segment7_EN_PORT, Segment7_1_EN, DIO_PIN_LOW);
 }
 void segment7_Stop (void)
 {
-	DIO_WritePIN(DIO_PORTB, DIO_PIN1, DIO_PIN_LOW);
-	DIO_WritePIN(DIO_PORTB, DIO_PIN2, DIO_PIN_LOW);
+	DIO_WritePIN(segment7_EN_PORT, Segment7_1_EN, DIO_PIN_LOW);
+	DIO_WritePIN(segment7_EN_PORT, Segment7_2_EN, DIO_PIN_LOW);
 }
 
 

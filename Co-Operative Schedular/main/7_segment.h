@@ -9,6 +9,13 @@
 #ifndef SEGMENT_H_
 #define SEGMENT_H_
 
+#define Segment7_1_EN		 DIO_PIN1
+#define Segment7_2_EN		 DIO_PIN2
+#define segmnet7_dot_point	 DIO_PIN3
+#define segment7_EN_PORT	 DIO_PORTB
+#define segment7_DATA_PORT	 PORTA
+
+
 #include "DIO.h"
 void segment7_init(void);
 void first_segment7_display(void);
