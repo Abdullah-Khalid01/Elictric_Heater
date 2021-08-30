@@ -60,9 +60,9 @@ int main(void)
 		Set_Tempreature=EEPROM_Read(EEPROM_Address);
 	}
 	
-	segment7_ID=Sch_Add_Task(first_segment7_display,0,50);  //start display values on 7-segment
+	segment7_ID=Sch_Add_Task(first_segment7_display,0,50);			//start display values on 7-segment
 	Sch_Add_Task(Timer0_SetDelay,0,0);							   //Initialize timer0 to count for 5 seconds
-	Sch_Add_Task(Timer0_Start,0,0);							  //Start counting after 5 seconds in case the user doesn't want to change the temperature.
+	Sch_Add_Task(Timer0_Start,0,0);								  //Start counting for 5 seconds in case the user doesn't want to change the temperature.
 	
     while(1)
     {	
@@ -132,11 +132,11 @@ ISR(TIMER0_OVF_vect)
 		TCNT0=CounterRegister_InitValue;
 		//re-initialize counter to start over in the next time
 		counter=0;
-		//stop blinking
-		//segment_blinking_speed=20;
-		//Start displaying the ADC(actual) temperature value.
+		//To change the value displayed and blinking speed.
 		SCH_Delete_Task(segment7_ID);
+		//stop blinking
 		segment7_ID=Sch_Add_Task(first_segment7_display,0,20);
+		//Start displaying the ADC(actual) temperature value.
 		TaskID=Sch_Add_Task(TempSensor_READ,0,100);
 	}
 	
